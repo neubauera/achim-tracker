@@ -1,19 +1,13 @@
-// Achim Tracker – offlinefähige Mini-App (PWA)
+// Achim Tracker v2 – PWA + Deep Links + bessere Reihenfolge
 const $ = (id) => document.getElementById(id);
 
-const DEFAULTS = {
-  bedPlan: "21:00", wakePlan: "06:00",
-  em1Plan: "07:05", em2Plan: "16:05"
-};
-
+const DEFAULTS = { bedPlan:"21:00", wakePlan:"06:00", em1Plan:"07:05", em2Plan:"16:05" };
 const SMOKE_WINDOWS = [
   {label:"07:30–07:45"}, {label:"10:00–10:15"}, {label:"12:30–12:45"},
   {label:"15:00–15:15"}, {label:"17:30–17:45"}, {label:"19:30–19:45"},
 ];
-
 const TRIGGERS = ["Morgen","Nach Essen","Abend","Stress","Langweile","Gewohnheit","Sozial","Unruhe","Leere","Traurigkeit","Ärger","Sonstiges"];
 const TOOLS = ["Wasser+10 Ausatmungen","2–5 Min Gehen","Dehnen/Wärme","Dusche","Tee","Kaugummi/Bonbon","Mini‑EM 2 Min","Ablenkung 5 Min","Snack/Protein","Sonstiges"];
-
 const JOURNAL_ITEMS = [
   "Angst/Unruhe","Ärger/Wut","Traurigkeit","Scham","Leere","Überforderung",
   "Ruhe","Freude","Verbundenheit","Klarheit",
@@ -22,179 +16,186 @@ const JOURNAL_ITEMS = [
 ];
 
 function todayISO(){
-  const d = new Date();
-  const pad = (n)=> String(n).padStart(2,"0");
+  const d=new Date(); const pad=n=>String(n).padStart(2,"0");
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
-
-function loadAll(){
-  try { return JSON.parse(localStorage.getItem("achimTracker")||"{}"); }
-  catch { return {}; }
-}
-
-function saveAll(db){
-  localStorage.setItem("achimTracker", JSON.stringify(db));
-}
+function loadAll(){ try{return JSON.parse(localStorage.getItem("achimTracker")||"{}");}catch{return {};} }
+function saveAll(db){ localStorage.setItem("achimTracker", JSON.stringify(db)); }
 
 function ensureDate(db, iso){
   if(!db[iso]){
     db[iso] = {
-      ...DEFAULTS,
-      date: iso,
-      smokeWindows: SMOKE_WINDOWS.map(()=>({smoked:null, craving:null, trigger:"", tool:"", result:null, when:""})),
-      cravingsOutside: [0,1,2].map(()=>({time:"", intensity:null, trigger:"", tool:"", smoked:null, result:null})),
+      ...DEFAULTS, date: iso,
+      smokeWindows: SMOKE_WINDOWS.map(()=>({smoked:"", when:"", craving:"", trigger:"", tool:"", result:""})),
+      cravingsOutside: [0,1,2].map(()=>({time:"", intensity:"", trigger:"", tool:"", smoked:"", result:""})),
       journal: JOURNAL_ITEMS.map(()=>false),
+      updatedAt: ""
     };
   }
   return db[iso];
 }
 
 function buildSelect(options, value){
-  const s = document.createElement("select");
-  const o0 = document.createElement("option"); o0.value=""; o0.textContent="–"; s.appendChild(o0);
-  options.forEach(v=>{ const o=document.createElement("option"); o.value=v; o.textContent=v; s.appendChild(o); });
-  s.value = value || "";
+  const s=document.createElement("select");
+  const o0=document.createElement("option"); o0.value=""; o0.textContent="–"; s.appendChild(o0);
+  options.forEach(v=>{const o=document.createElement("option"); o.value=v; o.textContent=v; s.appendChild(o);});
+  s.value=value||"";
   return s;
 }
 
 function renderSmoke(){
-  const wrap = $("smokeWindows");
-  wrap.innerHTML = "";
+  const wrap=$("smokeWindows"); wrap.innerHTML="";
   SMOKE_WINDOWS.forEach((w,i)=>{
-    const row = document.createElement("div");
-    row.className = "row";
-    row.style.marginBottom = "8px";
+    const box=document.createElement("details");
+    box.open = i===0;
+    box.id = `smoke-${i+1}`;
+    const sum=document.createElement("summary");
+    sum.innerHTML = `<div class="sumLeft"><strong>${w.label}</strong><span class="sumMeta">Fenster ${i+1}</span></div><span class="chip">Ausfüllen</span>`;
+    box.appendChild(sum);
 
-    const c1 = document.createElement("div"); c1.className="tiny";
-    c1.innerHTML = `<label>Zeitfenster</label><input type="text" value="${w.label}" disabled>`;
-    const c2 = document.createElement("div"); c2.className="tiny";
+    const row=document.createElement("div");
+    row.className="row"; row.style.marginTop="10px";
+
+    const c2=document.createElement("div"); c2.className="tiny";
     c2.innerHTML = `<label>Geraucht?</label>
       <select id="smoked_${i}">
         <option value="">–</option><option value="yes">Ja</option><option value="no">Nein</option>
       </select>`;
-    const c3 = document.createElement("div"); c3.className="tiny";
+    const c3=document.createElement("div"); c3.className="tiny";
     c3.innerHTML = `<label>Uhrzeit (wenn ja)</label><input id="when_${i}" type="time">`;
-    const c4 = document.createElement("div"); c4.className="tiny";
+    const c4=document.createElement("div"); c4.className="tiny";
     c4.innerHTML = `<label>Drang 0–10</label><input id="cr_${i}" type="number" min="0" max="10" step="1">`;
 
-    const c5 = document.createElement("div"); c5.className="col";
-    const trig = buildSelect(TRIGGERS, "");
-    trig.id = `tr_${i}`;
-    c5.appendChild(document.createElement("label")).textContent = "Trigger";
+    const c5=document.createElement("div"); c5.className="col";
+    const trig=buildSelect(TRIGGERS,""); trig.id=`tr_${i}`;
+    c5.appendChild(document.createElement("label")).textContent="Trigger";
     c5.appendChild(trig);
 
-    const c6 = document.createElement("div"); c6.className="col";
-    const tool = buildSelect(TOOLS, "");
-    tool.id = `tool_${i}`;
-    c6.appendChild(document.createElement("label")).textContent = "Tool/Ersatz";
+    const c6=document.createElement("div"); c6.className="col";
+    const tool=buildSelect(TOOLS,""); tool.id=`tool_${i}`;
+    c6.appendChild(document.createElement("label")).textContent="Tool/Ersatz";
     c6.appendChild(tool);
 
-    const c7 = document.createElement("div"); c7.className="tiny";
+    const c7=document.createElement("div"); c7.className="tiny";
     c7.innerHTML = `<label>Ergebnis 0–10</label><input id="res_${i}" type="number" min="0" max="10" step="1">`;
 
-    row.append(c1,c2,c3,c4,c5,c6,c7);
-    wrap.appendChild(row);
+    row.append(c2,c3,c4,c5,c6,c7);
+    box.appendChild(row);
+    wrap.appendChild(box);
   });
 }
 
 function renderCravingsOutside(){
-  const wrap = $("cravingsOutside");
-  wrap.innerHTML = "";
+  const wrap=$("cravingsOutside"); wrap.innerHTML="";
   for(let i=0;i<3;i++){
-    const row = document.createElement("div");
-    row.className="row";
-    row.style.marginBottom="8px";
+    const box=document.createElement("details");
+    box.open = i===0;
+    box.id = `craving-${i+1}`;
+    const sum=document.createElement("summary");
+    sum.innerHTML = `<div class="sumLeft"><strong>Craving ${i+1}</strong><span class="sumMeta">außerhalb Fenster</span></div><span class="chip">optional</span>`;
+    box.appendChild(sum);
 
-    const c1 = document.createElement("div"); c1.className="tiny";
+    const row=document.createElement("div");
+    row.className="row"; row.style.marginTop="10px";
+
+    const c1=document.createElement("div"); c1.className="tiny";
     c1.innerHTML = `<label>Zeit</label><input id="co_time_${i}" type="time">`;
-    const c2 = document.createElement("div"); c2.className="tiny";
+    const c2=document.createElement("div"); c2.className="tiny";
     c2.innerHTML = `<label>Drang 0–10</label><input id="co_int_${i}" type="number" min="0" max="10" step="1">`;
 
-    const c3 = document.createElement("div"); c3.className="col";
-    const trig = buildSelect(TRIGGERS, ""); trig.id = `co_tr_${i}`;
+    const c3=document.createElement("div"); c3.className="col";
+    const trig=buildSelect(TRIGGERS,""); trig.id=`co_tr_${i}`;
     c3.appendChild(document.createElement("label")).textContent="Trigger";
     c3.appendChild(trig);
 
-    const c4 = document.createElement("div"); c4.className="col";
-    const tool = buildSelect(TOOLS, ""); tool.id = `co_tool_${i}`;
+    const c4=document.createElement("div"); c4.className="col";
+    const tool=buildSelect(TOOLS,""); tool.id=`co_tool_${i}`;
     c4.appendChild(document.createElement("label")).textContent="Tool";
     c4.appendChild(tool);
 
-    const c5 = document.createElement("div"); c5.className="tiny";
+    const c5=document.createElement("div"); c5.className="tiny";
     c5.innerHTML = `<label>Geraucht?</label>
       <select id="co_smoked_${i}">
         <option value="">–</option><option value="yes">Ja</option><option value="no">Nein</option>
       </select>`;
-
-    const c6 = document.createElement("div"); c6.className="tiny";
+    const c6=document.createElement("div"); c6.className="tiny";
     c6.innerHTML = `<label>Ergebnis 0–10</label><input id="co_res_${i}" type="number" min="0" max="10" step="1">`;
 
     row.append(c1,c2,c3,c4,c5,c6);
-    wrap.appendChild(row);
+    box.appendChild(row);
+    wrap.appendChild(box);
   }
 }
 
 function renderJournal(){
-  const wrap = $("journalChecks");
-  wrap.innerHTML = "";
+  const wrap=$("journalChecks"); wrap.innerHTML="";
   JOURNAL_ITEMS.forEach((txt,i)=>{
-    const p = document.createElement("label");
-    p.className = "pill";
-    const cb = document.createElement("input");
-    cb.type="checkbox";
-    cb.id = `j_${i}`;
+    const p=document.createElement("label");
+    p.className="pill";
+    const cb=document.createElement("input"); cb.type="checkbox"; cb.id=`j_${i}`;
     p.appendChild(cb);
-    const span = document.createElement("span");
-    span.textContent = txt;
+    const span=document.createElement("span"); span.textContent=txt;
     p.appendChild(span);
     wrap.appendChild(p);
   });
 }
 
-function bindStatic(){
-  $("btnToday").onclick = ()=> { $("date").value = todayISO(); loadToForm(); };
-  $("btnPrev").onclick = ()=> shiftDate(-1);
-  $("btnNext").onclick = ()=> shiftDate(1);
-  $("btnSave").onclick = saveFromForm;
+function bindTimeline(){
+  document.querySelectorAll(".tlbtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const target = b.getAttribute("data-jump");
+      if(target) jumpTo(target);
+    });
+  });
+}
 
-  $("btnExport").onclick = exportData;
-  $("btnImport").onclick = ()=> $("filePicker").click();
+function jumpTo(hash){
+  const el = document.querySelector(hash);
+  if(!el) return;
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  flash(el);
+  history.replaceState(null, "", `${location.pathname}${location.search}${hash}`);
+}
+
+function flash(el){
+  el.classList.add("highlight");
+  setTimeout(()=>el.classList.remove("highlight"), 1200);
+}
+
+function bindStatic(){
+  $("btnToday").onclick=()=>{ $("date").value=todayISO(); loadToForm(); };
+  $("btnPrev").onclick=()=>shiftDate(-1);
+  $("btnNext").onclick=()=>shiftDate(1);
+  $("btnSave").onclick=saveFromForm;
+
+  $("btnExport").onclick=exportData;
+  $("btnImport").onclick=()=> $("filePicker").click();
   $("filePicker").addEventListener("change", importData);
 
   $("date").addEventListener("change", loadToForm);
+
+  window.addEventListener("hashchange", ()=> handleDeepLink());
 }
 
 function shiftDate(delta){
-  const d = new Date($("date").value || todayISO());
+  const d=new Date($("date").value||todayISO());
   d.setDate(d.getDate()+delta);
-  $("date").value = d.toISOString().slice(0,10);
+  $("date").value=d.toISOString().slice(0,10);
   loadToForm();
 }
 
 function loadToForm(){
-  const iso = $("date").value || todayISO();
-  const db = loadAll();
-  const rec = ensureDate(db, iso);
+  const iso=$("date").value||todayISO();
+  const db=loadAll();
+  const rec=ensureDate(db, iso);
   saveAll(db);
 
-  // map simple inputs
-  const map = {
-    bedPlan:"bedPlan", bedAct:"bedAct", wakePlan:"wakePlan", wakeAct:"wakeAct",
-    nightTimes:"nightTimes", sleepQ:"sleepQ",
-    tension:"tension", mood:"mood", alive:"alive", bodyLoc:"bodyLoc", state:"state",
-    creaLust:"creaLust", creaEff:"creaEff",
-    rosName:"rosName", rosTime:"rosTime", walkMin:"walkMin", kleinTake:"kleinTake",
-    em1Plan:"em1Plan", em1Act:"em1Act", em1Txt:"em1Txt",
-    em2Plan:"em2Plan", em2Act:"em2Act", em2Txt:"em2Txt",
-    canUsed:"canUsed", canTime:"canTime", canDose:"canDose", canCalm:"canCalm",
-    canAnx:"canAnx", canSleep:"canSleep", canInt:"canInt",
-    regLine:"regLine", trigLine:"trigLine"
-  };
-  Object.entries(map).forEach(([k,id])=>{
-    if($(id)) $(id).value = rec[k] ?? "";
-  });
+  const map = ["bedPlan","bedAct","wakePlan","wakeAct","nightTimes","sleepQ","tension","mood","alive",
+    "bodyLoc","state","creaLust","creaEff","rosName","rosTime","walkMin","kleinTake",
+    "em1Plan","em1Act","em1Txt","em2Plan","em2Act","em2Txt",
+    "canUsed","canTime","canDose","canCalm","canAnx","canSleep","canInt","regLine","trigLine"];
+  map.forEach(k=>{ if($(k)) $(k).value = rec[k] ?? ""; });
 
-  // smoke windows
   rec.smokeWindows.forEach((w,i)=>{
     $("smoked_"+i).value = w.smoked ?? "";
     $("when_"+i).value = w.when ?? "";
@@ -204,7 +205,6 @@ function loadToForm(){
     $("res_"+i).value = w.result ?? "";
   });
 
-  // cravings outside
   rec.cravingsOutside.forEach((w,i)=>{
     $("co_time_"+i).value = w.time ?? "";
     $("co_int_"+i).value = w.intensity ?? "";
@@ -214,38 +214,26 @@ function loadToForm(){
     $("co_res_"+i).value = w.result ?? "";
   });
 
-  // journal
-  rec.journal.forEach((v,i)=> { $("j_"+i).checked = !!v; });
+  rec.journal.forEach((v,i)=>{ $("j_"+i).checked = !!v; });
 
-  $("status").innerHTML = `<span class="ok">Geladen:</span> ${iso} (lokal gespeichert)`;
+  const upd = rec.updatedAt ? new Date(rec.updatedAt).toLocaleString() : "–";
+  $("status").innerHTML = `<span style="color:#5eead4;font-weight:600;">Geladen:</span> ${iso} · zuletzt: ${upd}`;
+
+  handleDeepLink(true);
 }
 
 function saveFromForm(){
-  const iso = $("date").value || todayISO();
-  const db = loadAll();
-  const rec = ensureDate(db, iso);
+  const iso=$("date").value||todayISO();
+  const db=loadAll();
+  const rec=ensureDate(db, iso);
 
   const read = (id)=> $(id).value;
-  // simple fields
-  Object.assign(rec, {
-    bedPlan: read("bedPlan"), bedAct: read("bedAct"),
-    wakePlan: read("wakePlan"), wakeAct: read("wakeAct"),
-    nightTimes: read("nightTimes"), sleepQ: read("sleepQ"),
-    tension: read("tension"), mood: read("mood"), alive: read("alive"),
-    bodyLoc: read("bodyLoc"), state: read("state"),
-    creaLust: read("creaLust"), creaEff: read("creaEff"),
-    rosName: read("rosName"), rosTime: read("rosTime"),
-    walkMin: read("walkMin"), kleinTake: read("kleinTake"),
-    em1Plan: read("em1Plan"), em1Act: read("em1Act"), em1Txt: read("em1Txt"),
-    em2Plan: read("em2Plan"), em2Act: read("em2Act"), em2Txt: read("em2Txt"),
-    canUsed: read("canUsed"), canTime: read("canTime"), canDose: read("canDose"),
-    canCalm: read("canCalm"), canAnx: read("canAnx"), canSleep: read("canSleep"),
-    canInt: read("canInt"),
-    regLine: read("regLine"), trigLine: read("trigLine"),
-    updatedAt: new Date().toISOString()
-  });
+  ["bedPlan","bedAct","wakePlan","wakeAct","nightTimes","sleepQ","tension","mood","alive",
+    "bodyLoc","state","creaLust","creaEff","rosName","rosTime","walkMin","kleinTake",
+    "em1Plan","em1Act","em1Txt","em2Plan","em2Act","em2Txt",
+    "canUsed","canTime","canDose","canCalm","canAnx","canSleep","canInt","regLine","trigLine"
+  ].forEach(k=> rec[k]=read(k));
 
-  // smoke windows
   rec.smokeWindows = SMOKE_WINDOWS.map((_,i)=>({
     smoked: $("smoked_"+i).value,
     when: $("when_"+i).value,
@@ -255,7 +243,6 @@ function saveFromForm(){
     result: $("res_"+i).value
   }));
 
-  // cravings outside
   rec.cravingsOutside = [0,1,2].map(i=>({
     time: $("co_time_"+i).value,
     intensity: $("co_int_"+i).value,
@@ -265,39 +252,52 @@ function saveFromForm(){
     result: $("co_res_"+i).value
   }));
 
-  // journal
   rec.journal = JOURNAL_ITEMS.map((_,i)=> $("j_"+i).checked);
+  rec.updatedAt = new Date().toISOString();
 
-  db[iso] = rec;
-  saveAll(db);
-  $("status").innerHTML = `<span class="ok">Gespeichert:</span> ${iso} (${new Date().toLocaleTimeString()})`;
+  db[iso]=rec; saveAll(db);
+  $("status").innerHTML = `<span style="color:#5eead4;font-weight:600;">Gespeichert:</span> ${iso} · ${new Date().toLocaleTimeString()}`;
 }
 
 function exportData(){
-  const db = loadAll();
-  const blob = new Blob([JSON.stringify(db, null, 2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `achim-tracker-export-${todayISO()}.json`;
+  const db=loadAll();
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`achim-tracker-export-${todayISO()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
 function importData(ev){
-  const file = ev.target.files?.[0];
+  const file=ev.target.files?.[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
     try{
-      const imported = JSON.parse(reader.result);
-      saveAll(imported);
+      saveAll(JSON.parse(reader.result));
       loadToForm();
       alert("Import ok.");
-    }catch(e){
-      alert("Import fehlgeschlagen: " + e);
-    }
+    }catch(e){ alert("Import fehlgeschlagen: "+e); }
   };
   reader.readAsText(file);
+}
+
+function handleDeepLink(onLoad=false){
+  const params = new URLSearchParams(location.search);
+  const d = params.get("date");
+  if(d && $("date").value !== d){
+    $("date").value = d;
+    if(!onLoad) loadToForm();
+  }
+  const hash = location.hash || "";
+  if(!hash) return;
+
+  const target = document.querySelector(hash);
+  if(target){
+    if(target.tagName.toLowerCase()==="details") target.open = true;
+    setTimeout(()=>{ target.scrollIntoView({behavior:"smooth", block:"start"}); flash(target); }, 80);
+  }
 }
 
 // PWA service worker
@@ -305,10 +305,11 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("./sw.js").catch(()=>{});
 }
 
-// init UI
+// init
 renderSmoke();
 renderCravingsOutside();
 renderJournal();
+bindTimeline();
 bindStatic();
 $("date").value = todayISO();
 loadToForm();
