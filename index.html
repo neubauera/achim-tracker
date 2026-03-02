@@ -1,146 +1,167 @@
 <!doctype html>
-<html lang="de"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Achim Tracker</title>
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0f14"><meta http-equiv="Cache-Control" content="no-store"/>
-<style>
-:root{--text:#eaf0f6;--muted:#9fb1c3;--line:rgba(255,255,255,.08);--pad:14px;--r:14px;}
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#070a0f 0%,#0b0f14 35%,#0b0f14 100%);color:var(--text);}
-header{position:sticky;top:0;z-index:10;padding:calc(10px + env(safe-area-inset-top)) var(--pad) 10px;background:rgba(11,15,20,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-h1{font-size:16px;margin:0}
-.toprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.btnbar{display:flex;gap:8px;flex-wrap:wrap}
-button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);padding:9px 10px;border-radius:12px;font-size:14px}
-button.primary{background:linear-gradient(135deg,rgba(94,234,212,.2),rgba(96,165,250,.18));border-color:rgba(94,234,212,.35)}
-.status{font-size:12px;color:var(--muted);margin-top:6px}
-main{padding:var(--pad);max-width:880px;margin:0 auto 100px;}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
-input,textarea,select{width:100%;padding:11px 12px;font-size:16px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--text);outline:none}
-textarea{min-height:78px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:0 10px 25px rgba(0,0,0,.25);margin:12px 0;}
-.sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.sectionTitle h2{font-size:13px;margin:0}
-.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.03);}
-.grid2{display:grid;grid-template-columns:1fr;gap:10px}
-@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
-.tiny{flex:1 1 140px}.col{flex:1 1 240px}
-.timeline{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.tlbtn{font-size:12px;color:var(--muted);padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
-.tlbtn strong{color:var(--text)}
-.pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:rgba(255,255,255,.03);margin:6px 6px 0 0;font-size:14px}
-.pill input{width:auto;transform:scale(1.15)}
-.hint{font-size:12px;color:var(--muted);margin-top:8px}
-.divider{height:1px;background:var(--line);margin:10px 0}
-.highlight{outline:2px solid rgba(94,234,212,.6);box-shadow:0 0 0 6px rgba(94,234,212,.12);border-radius:12px}
-details{border:1px solid var(--line);border-radius:var(--r);padding:10px;background:rgba(255,255,255,.02)}
-summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
-summary::-webkit-details-marker{display:none}
-.sumLeft{display:flex;flex-direction:column;gap:2px}.sumMeta{font-size:12px;color:var(--muted)}
-.miniBtn{font-size:12px;padding:7px 10px;border-radius:10px}
-.subtle{color:var(--muted);font-size:12px}
-.hidden{display:none!important}
-</style></head><body>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>Achim Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b0f14">
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <style>
+    :root{--bg:#0b0f14;--text:#eaf0f6;--muted:#9fb1c3;--line:rgba(255,255,255,.08);--accent:#5eead4;--accent2:#60a5fa;--pad:14px;--r:14px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#070a0f 0%,#0b0f14 35%,#0b0f14 100%);color:var(--text);}
+    header{position:sticky;top:0;z-index:10;padding:calc(8px + env(safe-area-inset-top)) var(--pad) 8px;background:rgba(11,15,20,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    main{padding:var(--pad);max-width:880px;margin:0 auto 110px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .sp{justify-content:space-between}
+    .title{font-size:14px;font-weight:700;letter-spacing:.2px}
+    .sub{font-size:12px;color:var(--muted)}
+    button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);padding:8px 10px;border-radius:12px;font-size:14px}
+    button.primary{background:linear-gradient(135deg,rgba(94,234,212,.2),rgba(96,165,250,.18));border-color:rgba(94,234,212,.35)}
+    button.icon{width:40px;display:flex;align-items:center;justify-content:center}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.03);}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:0 10px 25px rgba(0,0,0,.25);margin:12px 0;}
+    .sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sectionTitle h2{font-size:13px;margin:0}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,textarea,select{width:100%;padding:10px 12px;font-size:16px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--text);outline:none}
+    textarea{min-height:78px}
+    .tiny{flex:1 1 110px}.mid{flex:1 1 170px}.col{flex:1 1 240px}
+    .divider{height:1px;background:var(--line);margin:10px 0}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .hidden{display:none!important}
+    .qlBar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .qlBtn{font-size:12px;color:var(--muted);padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+    .qlBtn strong{color:var(--text);font-variant-numeric:tabular-nums}
+    .highlight{outline:2px solid rgba(94,234,212,.6);box-shadow:0 0 0 6px rgba(94,234,212,.12);border-radius:12px}
+    details{border:1px solid var(--line);border-radius:var(--r);padding:10px;background:rgba(255,255,255,.02)}
+    summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    summary::-webkit-details-marker{display:none}
+    .sumLeft{display:flex;flex-direction:column;gap:2px}
+    .sumMeta{font-size:12px;color:var(--muted)}
+    .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;z-index:50;padding:12px}
+    .modal{width:100%;max-width:700px;margin:0 auto;background:rgba(15,23,32,.98);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 25px 60px rgba(0,0,0,.55)}
+    .modalHead{display:flex;justify-content:space-between;align-items:center}
+    .pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:rgba(255,255,255,.03);margin:6px 6px 0 0;font-size:14px}
+    .pill input{width:auto;transform:scale(1.15)}
+  </style>
+</head>
+<body>
 <header>
-  <div class="toprow">
-    <div style="display:flex;flex-direction:column;gap:2px;">
-      <h1>Achim Tracker</h1>
-      <div class="status" id="ver">Version: –</div>
+  <div class="row sp">
+    <div>
+      <div class="title">Achim Tracker</div>
+      <div class="sub" id="ver">Version: –</div>
     </div>
-    <div class="btnbar">
-      <button id="btnToday">Heute</button>
-      <button id="btnExport">Export</button>
-      <button id="btnImport">Import</button>
+    <div class="row" style="gap:8px;">
+      <button id="btnToday" class="icon" title="Heute">⦿</button>
+      <button id="btnSettings" class="icon" title="Einstellungen">⚙︎</button>
     </div>
   </div>
 
-  <div class="row" style="margin-top:10px;align-items:flex-end;">
-    <div class="tiny">
-      <label>Datum</label><input id="date" type="date"/>
+  <div class="row sp" style="margin-top:8px;">
+    <div class="row" style="gap:8px;flex:1 1 auto;">
+      <div class="chip" id="dateLabel">Datum</div>
+      <input id="date" type="date" class="mid" />
+      <div class="chip" id="todayTag" style="display:none;">(heute)</div>
     </div>
-    <div class="col">
-      <div class="status" id="status">Lokale Speicherung (nur auf deinem Gerät)</div>
-      <div class="row" style="justify-content:space-between;align-items:center;margin-top:8px;">
-        <div class="subtle">Quicklinks (nach Uhrzeit)</div>
-        <button class="miniBtn" id="toggleLinks">Ausblenden</button>
-      </div>
-      <div class="timeline" id="timeline">
-        <button class="tlbtn" data-jump="#sleep"><strong>06:00</strong> Schlaf</button>
-        <button class="tlbtn" data-jump="#practice"><strong>06:35</strong> Praxis</button>
-        <button class="tlbtn" data-jump="#em1"><strong>07:05</strong> EM 1</button>
-        <button class="tlbtn" data-jump="#smoke-1"><strong>07:30</strong> Rauch 1</button>
-        <button class="tlbtn" data-jump="#smoke-2"><strong>10:00</strong> Rauch 2</button>
-        <button class="tlbtn" data-jump="#smoke-3"><strong>12:30</strong> Rauch 3</button>
-        <button class="tlbtn" data-jump="#smoke-4"><strong>15:00</strong> Rauch 4</button>
-        <button class="tlbtn" data-jump="#em2"><strong>16:05</strong> EM 2</button>
-        <button class="tlbtn" data-jump="#smoke-5"><strong>17:30</strong> Rauch 5</button>
-        <button class="tlbtn" data-jump="#cannabis"><strong>19:15</strong> Cannabis</button>
-        <button class="tlbtn" data-jump="#smoke-6"><strong>19:30</strong> Rauch 6</button>
-        <button class="tlbtn" data-jump="#journal"><strong>20:30</strong> Journal</button>
-        <button class="tlbtn" data-jump="#evening"><strong>21:00</strong> Abend</button>
-        <button class="tlbtn" data-jump="#notes"><strong>+</strong> Notiz</button>
-      </div>
-    </div>
+    <div class="chip" id="status">–</div>
+  </div>
+
+  <div class="row sp" style="margin-top:10px;">
+    <button id="btnLinks">Quicklinks</button>
+    <div class="sub">Tippen → springt → klappt zu</div>
+  </div>
+  <div id="qlBar" class="qlBar hidden">
+    <button class="qlBtn" data-jump="#sleep"><strong>06:00</strong> Schlaf</button>
+    <button class="qlBtn" data-jump="#practice"><strong>06:35</strong> Praxis</button>
+    <button class="qlBtn" data-jump="#em1"><strong>07:05</strong> EM 1</button>
+    <button class="qlBtn" data-jump="#smoke"><strong>07:30</strong> Rauchen</button>
+    <button class="qlBtn" data-jump="#em2"><strong>16:05</strong> EM 2</button>
+    <button class="qlBtn" data-jump="#cannabis"><strong>19:15</strong> Cannabis</button>
+    <button class="qlBtn" data-jump="#journal"><strong>20:30</strong> Journal</button>
+    <button class="qlBtn" data-jump="#notes"><strong>+</strong> Notiz</button>
+    <button class="qlBtn" data-jump="#evening"><strong>21:00</strong> Abend</button>
   </div>
 </header>
 
 <main>
   <div class="card" id="sleep">
-    <div class="sectionTitle"><h2>Schlaf & Morgen‑Check</h2><span class="chip">2–3 Min</span></div>
-    <div class="grid2" style="margin-top:10px;">
-      <div><label>Ins Bett (geplant / tatsächlich)</label><div class="row"><div class="tiny"><input id="bedPlan" type="time"></div><div class="tiny"><input id="bedAct" type="time"></div></div></div>
-      <div><label>Aufgewacht (geplant / tatsächlich)</label><div class="row"><div class="tiny"><input id="wakePlan" type="time"></div><div class="tiny"><input id="wakeAct" type="time"></div></div></div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-      <div class="col"><label>Nachts wach? (Uhrzeiten)</label><input id="nightTimes" type="text" placeholder="z.B. 02:10–02:45, 04:30–05:00"></div>
-      <div class="tiny"><label>Schlafqualität (0–10)</label><input id="sleepQ" type="number" min="0" max="10" step="1"></div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-      <div class="tiny"><label>Spannung (0–10)</label><input id="tension" type="number" min="0" max="10" step="1"></div>
-      <div class="tiny"><label>Stimmung (0–10)</label><input id="mood" type="number" min="0" max="10" step="1"></div>
-      <div class="tiny"><label>Lebendigkeit (0–10)</label><input id="alive" type="number" min="0" max="10" step="1"></div>
-    </div>
+    <div class="sectionTitle"><h2>Schlaf & Morgen‑Check</h2><span class="chip">2–5 Min</span></div>
 
-    <div class="divider"></div>
-    <div class="sectionTitle"><h2>Körperstellen – Rangliste</h2><span class="chip">optional</span></div>
-    <div class="hint">Wähle die 3 wichtigsten (1 = am stärksten). Optional: darunter weitere ankreuzen.</div>
     <div class="row" style="margin-top:10px;">
-      <div class="col"><label>1 (am stärksten)</label><select id="bodyRank1"></select></div>
-      <div class="col"><label>2</label><select id="bodyRank2"></select></div>
-      <div class="col"><label>3</label><select id="bodyRank3"></select></div>
-    </div>
-    <div class="row" style="margin-top:10px;">
-      <div class="col"><label>Weitere Körperstellen (optional)</label><div id="bodyExtras"></div></div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="row" style="margin-top:10px;">
-      <div class="col">
-        <label>Nervensystem‑State</label>
-        <select id="state">
-          <option value="">–</option><option value="ventral">Verbunden/Sicher</option><option value="symp">Anspannung/Alarm</option>
-          <option value="dorsal">Shutdown/Leer</option><option value="mix">Unklar/Mischung</option>
-        </select>
-        <div id="stateDetailWrap" class="hidden" style="margin-top:8px;">
-          <label>Wenn Mischung: eher Richtung…</label>
-          <select id="stateDetail"><option value="">–</option><option value="more_ventral">eher Verbunden</option><option value="more_symp">eher Alarm</option><option value="more_dorsal">eher Shutdown</option></select>
+      <div class="mid">
+        <label>Ins Bett (geplant / tatsächlich)</label>
+        <div class="row">
+          <div class="tiny"><input id="bedPlan" type="time"></div>
+          <div class="tiny"><input id="bedAct" type="time"></div>
         </div>
       </div>
-      <div class="tiny"><label>Kreative Lust (0–10)</label><input id="creaLust" type="number" min="0" max="10" step="1"></div>
-      <div class="tiny"><label>Kreative Wirksamkeit (0–10)</label><input id="creaEff" type="number" min="0" max="10" step="1"></div>
+      <div class="mid">
+        <label>Aufgewacht (geplant / tatsächlich)</label>
+        <div class="row">
+          <div class="tiny"><input id="wakePlan" type="time"></div>
+          <div class="tiny"><input id="wakeAct" type="time"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sectionTitle"><h2>Nachts wach (Perioden)</h2><span class="chip">dynamisch</span></div>
+    <div class="hint">„+ Periode“ → von/bis auswählen.</div>
+    <div id="nightList" style="margin-top:10px;"></div>
+    <div class="row" style="margin-top:10px;">
+      <button id="btnAddNight">+ Periode</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="tiny"><label>Schlafqualität (0–10)</label><select id="sleepQ"></select></div>
+      <div class="tiny"><label>Spannung (0–10)</label><select id="tension"></select></div>
+      <div class="tiny"><label>Stimmung (0–10)</label><select id="mood"></select></div>
+      <div class="tiny"><label>Lebendigkeit (0–10)</label><select id="alive"></select></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sectionTitle"><h2>Körpercheck (bis 6 Stellen)</h2><span class="chip">dynamisch</span></div>
+    <div class="hint">Stärkste Stelle zuerst, dann weitere hinzufügen.</div>
+    <div id="bodyList" style="margin-top:10px;"></div>
+    <div class="row" style="margin-top:10px;">
+      <button id="btnAddBody">+ Körperstelle</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sectionTitle"><h2>Nervensystem (Mehrfachauswahl)</h2><span class="chip">dynamisch</span></div>
+    <div id="nsList" style="margin-top:10px;"></div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="tiny"><label>Kreative Lust (0–10)</label><select id="creaLust"></select></div>
+      <div class="tiny"><label>Kreative Wirksamkeit (0–10)</label><select id="creaEff"></select></div>
     </div>
   </div>
 
   <div class="card" id="practice">
     <div class="sectionTitle"><h2>Praxis (nüchtern)</h2><span class="chip">10–20 Min</span></div>
     <div class="row" style="margin-top:10px;">
-      <div class="col"><label>Rosenberg Übung (Name) + Uhrzeit (tatsächlich)</label><div class="row"><div class="col"><input id="rosName" type="text" placeholder="Übung"></div><div class="tiny"><input id="rosTime" type="time"></div></div></div>
-      <div class="tiny"><label>Spaziergang – Minuten (ohne Podcast)</label><input id="walkMin" type="number" min="0" max="300" step="5" placeholder="z.B. 20"></div>
+      <div class="col">
+        <label>Rosenberg Übung (Name) + Uhrzeit</label>
+        <div class="row">
+          <div class="col"><input id="rosName" type="text" placeholder="Übung"></div>
+          <div class="tiny"><input id="rosTime" type="time"></div>
+        </div>
+      </div>
+      <div class="tiny">
+        <label>Spaziergang – Minuten</label>
+        <input id="walkMin" type="number" min="0" max="300" step="5" placeholder="z.B. 20">
+      </div>
     </div>
     <div class="row" style="margin-top:10px;">
-      <div class="col"><label>Klein (Buch) – Takeaway (1 Satz)</label><input id="kleinTake" type="text" placeholder="1 Satz, der hängen blieb"></div>
+      <div class="col"><label>Klein – Takeaway (1 Satz)</label><input id="kleinTake" type="text" placeholder="1 Satz"></div>
     </div>
   </div>
 
@@ -149,36 +170,43 @@ summary::-webkit-details-marker{display:none}
     <div class="row" style="margin-top:10px;">
       <div class="tiny"><label>Geplant</label><input id="em1Plan" type="time"></div>
       <div class="tiny"><label>Tatsächlich</label><input id="em1Act" type="time"></div>
-      <div class="col"><label>Impulse (optional)</label><select id="emPrompt1"></select></div>
+      <div class="col"><label>EM‑Formulierungen (optional)</label><select id="emPrompt1"></select></div>
     </div>
-    <label style="margin-top:10px;">1–3 Sätze</label>
-    <textarea id="em1Txt" placeholder="Jetzt spüre ich… / Ich merke… / Ich brauche…"></textarea>
+    <label style="margin-top:10px;">Notiz</label>
+    <textarea id="em1Txt" placeholder="kurz reicht"></textarea>
   </div>
 
-  <div id="smokeCards"></div>
+  <div class="card" id="smoke">
+    <div class="sectionTitle"><h2>Rauchen (Fenster dynamisch)</h2><span class="chip">dynamisch</span></div>
+    <div class="hint">„+ Fenster“ → Zeit + kurze Eingabe. Beliebig viele.</div>
+    <div id="smokeList" style="margin-top:10px;"></div>
+    <div class="row" style="margin-top:10px;"><button id="btnAddSmoke">+ Fenster</button></div>
+  </div>
 
   <div class="card" id="em2">
     <div class="sectionTitle"><h2>Mini‑EM Slot 2</h2><span class="chip">10–12 Min</span></div>
     <div class="row" style="margin-top:10px;">
       <div class="tiny"><label>Geplant</label><input id="em2Plan" type="time"></div>
       <div class="tiny"><label>Tatsächlich</label><input id="em2Act" type="time"></div>
-      <div class="col"><label>Impulse (optional)</label><select id="emPrompt2"></select></div>
+      <div class="col"><label>EM‑Formulierungen (optional)</label><select id="emPrompt2"></select></div>
     </div>
-    <label style="margin-top:10px;">1–3 Sätze</label>
-    <textarea id="em2Txt" placeholder="1–3 Sätze"></textarea>
+    <label style="margin-top:10px;">Notiz</label>
+    <textarea id="em2Txt" placeholder="kurz reicht"></textarea>
   </div>
 
   <div class="card" id="cannabis">
     <div class="sectionTitle"><h2>Cannabis (optional)</h2><span class="chip">ausklappbar</span></div>
-    <details id="canDetails" style="margin-top:10px;">
-      <summary><div class="sumLeft"><strong>Ausfüllen</strong><span class="sumMeta">nimmt wenig Platz</span></div><span class="chip">optional</span></summary>
+    <details id="canDet" style="margin-top:10px;">
+      <summary><div class="sumLeft"><strong>Ausklappen</strong><span class="sumMeta">nur wenn relevant</span></div><span class="chip">optional</span></summary>
       <div class="row" style="margin-top:10px;">
         <div class="tiny"><label>Genutzt?</label><select id="canUsed"><option value="">–</option><option value="yes">Ja</option><option value="no">Nein</option></select></div>
         <div class="tiny"><label>Zeit</label><input id="canTime" type="time"></div>
         <div class="tiny"><label>Dosis</label><select id="canDose"><option value="">–</option><option>niedrig</option><option>mittel</option><option>hoch</option></select></div>
-        <div class="tiny"><label>Ruhe (0–10)</label><input id="canCalm" type="number" min="0" max="10" step="1"></div>
-        <div class="tiny"><label>Angst (0–10)</label><input id="canAnx" type="number" min="0" max="10" step="1"></div>
-        <div class="tiny"><label>Schlaf danach (0–10)</label><input id="canSleep" type="number" min="0" max="10" step="1"></div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <div class="tiny"><label>Ruhe (0–10)</label><select id="canCalm"></select></div>
+        <div class="tiny"><label>Angst (0–10)</label><select id="canAnx"></select></div>
+        <div class="tiny"><label>Schlaf (0–10)</label><select id="canSleep"></select></div>
       </div>
       <div class="row" style="margin-top:10px;">
         <div class="col"><label>Integration nächster Morgen?</label><select id="canInt"><option value="">–</option><option value="yes">Ja</option><option value="no">Nein</option></select></div>
@@ -187,40 +215,61 @@ summary::-webkit-details-marker{display:none}
   </div>
 
   <div class="card" id="journal">
-    <div class="sectionTitle"><h2>Journaling – Checkboxen + Notizen</h2><span class="chip">2–4 Min</span></div>
-    <div class="hint">Wenn du etwas ankreuzt, erscheint ein kleines Notizfeld (optional).</div>
-    <div id="journalChecks" style="margin-top:10px;"></div>
+    <div class="sectionTitle"><h2>Journaling (Häkchen + Mini‑Notiz)</h2><span class="chip">2–6 Min</span></div>
+    <div class="hint">1 Tap = Häkchen. Wenn aktiv → Mini‑Notiz erscheint.</div>
+    <div id="journalChips" style="margin-top:10px;"></div>
   </div>
 
   <div class="card" id="notes">
-    <div class="sectionTitle"><h2>Spontane Notizen / Slots</h2><span class="chip">frei</span></div>
-    <div class="hint">Für alles, was plötzlich auftaucht. Wird mit Uhrzeit gespeichert.</div>
-    <div class="row" style="margin-top:10px;">
-      <div class="tiny"><label>Uhrzeit</label><input id="noteTime" type="time"></div>
-      <div class="col"><label>Worum geht’s?</label><input id="noteTitle" type="text" placeholder="z.B. Erkenntnis / Trigger / Körper"></div>
+    <div class="sectionTitle"><h2>Spontane Notizen</h2><span class="chip">dynamisch</span></div>
+    <div class="row" style="margin-top:10px;"><button id="btnShowNote" class="primary">+ Notiz hinzufügen</button></div>
+    <div id="noteForm" class="hidden" style="margin-top:10px;">
+      <div class="row">
+        <div class="tiny"><label>Uhrzeit</label><input id="noteTime" type="time"></div>
+        <div class="col"><label>Titel</label><input id="noteTitle" type="text" placeholder="z.B. Trigger / Erkenntnis"></div>
+      </div>
+      <label style="margin-top:10px;">Notiz</label>
+      <textarea id="noteText"></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnAddNote" class="primary">Speichern</button>
+        <button id="btnCancelNote">Schließen</button>
+      </div>
     </div>
-    <label style="margin-top:10px;">Notiz</label>
-    <textarea id="noteText" placeholder="kurz reicht"></textarea>
-    <div class="row" style="margin-top:10px;"><button id="btnAddNote" class="primary">Notiz speichern</button></div>
     <div class="divider"></div>
-    <div id="noteList" class="hint"></div>
+    <div id="noteList" class="sub">–</div>
   </div>
 
   <div class="card" id="evening">
-    <div class="sectionTitle"><h2>Abends (2 Min)</h2><span class="chip">2 Min</span></div>
+    <div class="sectionTitle"><h2>Abends</h2><span class="chip">5–15 Min</span></div>
     <label>Was hat dich heute reguliert? (1 Satz)</label>
-    <input id="regLine" type="text" placeholder="z.B. Atmung, Spaziergang, Kontakt, Wärme…">
+    <input id="regLine" type="text" placeholder="z.B. Wärme + lange Ausatmung">
     <label style="margin-top:10px;">Was hat dich heute getriggert? (1 Satz)</label>
-    <input id="trigLine" type="text" placeholder="z.B. Nähe/Leere/Druck…">
+    <input id="trigLine" type="text" placeholder="z.B. Leere nach dem Essen">
   </div>
 
-  <div class="btnbar" style="justify-content:space-between; margin: 18px 0 60px;">
+  <div class="row sp" style="margin:18px 0 60px;">
     <button id="btnPrev">←</button>
-    <button class="primary" id="btnSave">Speichern</button>
+    <button id="btnSave" class="primary">Speichern</button>
     <button id="btnNext">→</button>
   </div>
-  <p class="hint">Speicherung: lokal am Gerät. Export/Import als JSON.</p>
 </main>
 
-<input type="file" id="filePicker" accept=".json" style="display:none"/>
-<script src="app.js"></script></body></html>
+<div id="modalBack" class="modalBack">
+  <div class="modal">
+    <div class="modalHead">
+      <div><div class="title">Achim Tracker</div><div class="sub" id="modalVer">–</div></div>
+      <button id="btnCloseModal" class="icon">✕</button>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <button id="btnExport">Export</button>
+      <button id="btnImport">Import</button>
+    </div>
+    <div class="hint">Export/Import als JSON (Backup). Daten bleiben lokal.</div>
+  </div>
+</div>
+
+<input type="file" id="filePicker" accept=".json" class="hidden" />
+<script src="app.js"></script>
+</body>
+</html>
